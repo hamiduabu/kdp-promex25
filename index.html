@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,6 +40,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -89,27 +91,55 @@
         }
 
         .status-icon {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #f2a843, #e09635);
-            border-radius: 50%;
-            margin: 0 auto 30px;
+            display: none;
+        }
+
+        .test-access-section {
+            background: #fff3e0;
+            border: 2px solid #f2a843;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .test-access-section h3 {
+            color: #1e245f;
+            font-size: 18px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 50px;
-            animation: pulse 2s ease-in-out infinite;
+            gap: 10px;
         }
 
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(242, 168, 67, 0.7);
-            }
-            50% {
-                transform: scale(1.05);
-                box-shadow: 0 0 0 20px rgba(242, 168, 67, 0);
-            }
+        .test-access-section p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .btn-test-access {
+            display: inline-block;
+            background: linear-gradient(135deg, #17956a, #128a5d);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(23, 149, 106, 0.3);
+        }
+
+        .btn-test-access:hover {
+            background: linear-gradient(135deg, #128a5d, #0f6b48);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(23, 149, 106, 0.4);
+        }
+
+        .btn-test-access:active {
+            transform: translateY(0);
         }
 
         .main-message {
@@ -218,14 +248,18 @@
                 font-size: 16px;
             }
 
-            .status-icon {
-                width: 80px;
-                height: 80px;
-                font-size: 40px;
+            .test-access-section {
+                padding: 20px;
+            }
+
+            .btn-test-access {
+                padding: 12px 30px;
+                font-size: 14px;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="card">
@@ -238,14 +272,19 @@
             </div>
 
             <div class="content">
-                <div class="status-icon">⏸️</div>
-                
                 <h2 class="main-message">Examination Period Concluded</h2>
-                
+
                 <p class="sub-message">
-                    The KADIPA 2025 Promotion Examinations have been successfully completed. 
+                    The KADIPA 2025 Promotion Examinations have been successfully completed.
                     The examination portal is currently offline for system maintenance and improvements.
                 </p>
+
+                <div class="test-access-section">
+                    <h3>🔧 System Testing & Development</h3>
+                    <p>Authorized personnel can access the test environment for system improvements and feature testing.
+                    </p>
+                    <a href="cbt-exam-test.html" class="btn-test-access">Access Test Environment</a>
+                </div>
 
                 <div class="info-box">
                     <h3>✅ Examination Status</h3>
@@ -269,10 +308,11 @@
 
             <div class="footer">
                 <p>
-                    <strong>Thank you to all candidates</strong> who participated in the KADIPA 2025 Promotion Examinations. 
+                    <strong>Thank you to all candidates</strong> who participated in the KADIPA 2025 Promotion
+                    Examinations.
                     Your cooperation and professionalism throughout the examination process are greatly appreciated.
                 </p>
-                
+
                 <p style="margin-top: 30px; font-size: 12px; color: #999;">
                     © 2025 KADIPA CBT Examination System. All rights reserved.
                 </p>
@@ -282,9 +322,9 @@
 
     <script>
         // Prevent any access attempts
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             // Prevent F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
-            if (e.keyCode === 123 || 
+            if (e.keyCode === 123 ||
                 (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
                 (e.ctrlKey && e.keyCode === 85)) {
                 e.preventDefault();
@@ -293,7 +333,7 @@
         });
 
         // Prevent right-click
-        document.addEventListener('contextmenu', function(e) {
+        document.addEventListener('contextmenu', function (e) {
             e.preventDefault();
             return false;
         });
@@ -301,7 +341,8 @@
         // Log access attempt
         console.log('%cKADIPA CBT System', 'color: #1e245f; font-size: 20px; font-weight: bold;');
         console.log('%cExamination portal is currently offline.', 'color: #17956a; font-size: 14px;');
-        console.log('%cFor official inquiries, please contact KADIPA Administration Department.', 'color: #665; font-size: 12px;');
+        console.log('%cFor official inquiries, please contact KADIPA administration.', 'color: #666; font-size: 12px;');
     </script>
 </body>
+
 </html>
