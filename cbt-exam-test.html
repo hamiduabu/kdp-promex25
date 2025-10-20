@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Exam System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1e245f;
+            --secondary-color: #17956a;
+            --accent-color: #f2a843;
+            --bg-color: #f5f5f5;
+            --text-dark: #333;
+            --text-light: #666;
+            --white: #ffffff;
+            --error: #d32f2f;
+            --success: #2e7d32;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-top: 0;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--secondary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: #128a5d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-accent {
+            background: var(--accent-color);
+            color: var(--white);
+        }
+
+        .btn-accent:hover {
+            background: #e09635;
+        }
+
+        .btn-danger {
+            background: var(--error);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-error {
+            background: #ffebee;
+            color: var(--error);
+            border-left: 4px solid var(--error);
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            color: #1976d2;
+            border-left: 4px solid #1976d2;
+        }
+
+        .candidate-info {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .candidate-info h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .info-value {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .timer-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--white);
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+
+        .timer-label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .timer-display {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--secondary-color);
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-display.warning {
+            color: var(--accent-color);
+        }
+
+        .timer-display.critical {
+            color: var(--error);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .question-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .question-progress {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .question-text {
+            font-size: 18px;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            color: var(--text-dark);
+        }
+
+        .options {
+            margin-bottom: 20px;
+        }
+
+        .option {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option:hover {
+            background: #f0f0f0;
+            border-color: var(--secondary-color);
+        }
+
+        .option.selected {
+            background: #e8f5e9;
+            border-color: var(--secondary-color);
+        }
+
+        .option-label {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+            margin-right: 12px;
+            font-weight: 600;
+        }
+
+        .option.selected .option-label {
+            background: var(--secondary-color);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn-nav {
+            flex: 1;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--secondary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-card {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .result-score {
+            font-size: 72px;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin: 20px 0;
+        }
+
+        .result-score.fail {
+            color: var(--error);
+        }
+
+        .result-details {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .timer-container {
+                top: 10px;
+                right: 10px;
+                padding: 10px 15px;
+            }
+
+            .timer-display {
+                font-size: 20px;
+            }
+
+            .navigation {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Computer-Based Test (CBT) Examination</h1>
+            <p>Secure Online Assessment Platform</p>
+        </div>
+
+        <div class="card">
+            <!-- Login Screen -->
+            <div id="loginScreen" class="screen active">
+                <h2 style="margin-bottom: 20px; color: var(--primary-color);">Candidate Login</h2>
+                <div id="loginMessage"></div>
+                <div class="form-group">
+                    <label for="examAccessId">Exam Access ID</label>
+                    <input type="text" id="examAccessId" placeholder="Enter your Exam Access ID" autocomplete="off">
+                </div>
+                <button class="btn btn-primary" onclick="handleLogin()" style="width: 100%;">Login</button>
+            </div>
+
+            <!-- Instructions Screen -->
+            <div id="instructionsScreen" class="screen">
+                <h2 style="margin-bottom: 20px; color: var(--primary-color);">Candidate Information</h2>
+                <div class="candidate-info">
+                    <h3>Personal Details</h3>
+                    <div class="info-row">
+                        <span class="info-label">Name:</span>
+                        <span class="info-value" id="candName"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">PSN:</span>
+                        <span class="info-value" id="candPsn"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Department:</span>
+                        <span class="info-value" id="candDept"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Exam:</span>
+                        <span class="info-value" id="candExam"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Duration:</span>
+                        <span class="info-value" id="candDuration"></span>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Important Instructions:</strong>
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li>Read each question carefully before selecting your answer</li>
+                        <li>You can navigate between questions using Next and Previous buttons</li>
+                        <li>The exam will auto-submit when time expires</li>
+                        <li>Do not exit fullscreen mode or the exam will auto-submit</li>
+                        <li>Ensure stable internet connection for submission</li>
+                        <li>Click "Submit Exam" when you're done</li>
+                    </ul>
+                </div>
+
+                <button class="btn btn-accent" onclick="startExam()" style="width: 100%;">Start Exam</button>
+            </div>
+
+            <!-- Exam Screen -->
+            <div id="examScreen" class="screen">
+                <div id="timerContainer" class="timer-container" style="display: none;">
+                    <div class="timer-label">Time Remaining</div>
+                    <div class="timer-display" id="timerDisplay">00:00:00</div>
+                </div>
+
+                <div id="examContent" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading exam questions...</p>
+                </div>
+            </div>
+
+            <!-- Results Screen -->
+            <div id="resultsScreen" class="screen">
+                <div class="result-card">
+                    <h2 style="color: var(--primary-color);">Exam Completed!</h2>
+                    <div class="result-score" id="resultScore">--</div>
+                    <h3 id="resultRemark">--</h3>
+                    
+                    <div class="result-details">
+                        <div class="result-row">
+                            <span><strong>Total Questions:</strong></span>
+                            <span id="resultTotal">--</span>
+                        </div>
+                        <div class="result-row">
+                            <span><strong>Correct Answers:</strong></span>
+                            <span id="resultCorrect">--</span>
+                        </div>
+                        <div class="result-row">
+                            <span><strong>Time Taken:</strong></span>
+                            <span id="resultDuration">--</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success" style="margin-top: 20px;">
+                        Your results have been recorded. You may now close this window.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warning Modal -->
+    <div id="warningModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">⚠️ Fullscreen Exit Warning</div>
+            <div class="modal-body">
+                You have exited fullscreen mode. This is your <strong id="warningCount">first</strong> warning.
+                <br><br>
+                If you exit fullscreen again, your exam will be automatically submitted.
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="returnToFullscreen()">Return to Fullscreen</button>
+                <button class="btn btn-danger" onclick="endExamEarly()">End Exam Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">📋 Review Summary</div>
+            <div class="modal-body" id="reviewModalBody">
+                <!-- Content filled by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeReviewModal()">Continue Review</button>
+                <button class="btn btn-danger" onclick="submitFromReview()">Submit Exam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Submit Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">⚠️ Confirm Submission</div>
+            <div class="modal-body" id="confirmModalBody">
+                <!-- Content filled by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeConfirmModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="finalSubmit()">Yes, Submit Exam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permission Request Modal -->
+    <div id="permissionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">🔒 Fullscreen Required</div>
+            <div class="modal-body">
+                <p><strong>This exam must be taken in fullscreen mode for security purposes.</strong></p>
+                <p>When you click "Enter Fullscreen", your browser will ask for permission. Please click <strong>Allow</strong>.</p>
+                <br>
+                <p style="color: #d32f2f;"><em>⚠️ Note: If your browser does not support fullscreen mode, please contact the administrator. You cannot proceed without fullscreen.</em></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="requestFullscreenPermission()" style="width: 100%;">Enter Fullscreen & Start Exam</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - REPLACE WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfK3A_8TZdYhgmoS_leKf2nPexNXcQ6jyVU8N4jALz528pbsnl5F4ubdfJ80qBNvY0tw/exec';
+        const TOTAL_QUESTIONS = 50; // Total questions per exam
+
+        // Application State
+        let appState = {
+            candidate: null,
+            questions: [],
+            answers: {},
+            currentQuestion: 0,
+            timerSeconds: 0,
+            timerInterval: null,
+            fullscreenExitCount: 0,
+            examStartTime: null,
+            submitting: false,
+            fullscreenSkipped: false
+        };
+
+        // Utility: Show modal
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        // Utility: Hide modal
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // Utility: Show message
+        function showMessage(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => el.innerHTML = '', 5000);
+        }
+
+        // Listen for responses from iframe via postMessage
+        window.addEventListener('message', function(event) {
+            // Handle response from Google Script
+            if (event.data && typeof event.data === 'object') {
+                if (window.pendingCallback) {
+                    console.log('Received postMessage:', event.data);
+                    window.pendingCallback(event.data);
+                    window.pendingCallback = null;
+                }
+            } else if (typeof event.data === 'string') {
+                try {
+                    const parsed = JSON.parse(event.data);
+                    console.log('Received postMessage (parsed):', parsed);
+                    if (window.pendingCallback) {
+                        window.pendingCallback(parsed);
+                        window.pendingCallback = null;
+                    }
+                } catch(e) {
+                    // Not JSON, ignore
+                }
+            }
+        });
+
+        // Utility: Submit to Google Script (bypasses CORS)
+        function submitToGoogleScript(data) {
+            return new Promise((resolve, reject) => {
+                const iframe = document.createElement('iframe');
+                iframe.name = 'hidden_iframe';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = SCRIPT_URL;
+                form.target = 'hidden_iframe';
+
+                const dataInput = document.createElement('input');
+                dataInput.type = 'hidden';
+                dataInput.name = 'data';
+                dataInput.value = JSON.stringify(data);
+                form.appendChild(dataInput);
+
+                document.body.appendChild(form);
+
+                // Set up callback for postMessage
+                window.pendingCallback = (response) => {
+                    clearTimeout(timeoutId);
+                    cleanup();
+                    resolve(response);
+                };
+
+                // Extended timeout for better reliability
+                const timeoutId = setTimeout(() => {
+                    window.pendingCallback = null;
+                    // Timeout - try to read iframe content directly
+                    try {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        
+                        // Try to find JSON in the page
+                        const preElement = iframeDoc.querySelector('pre');
+                        if (preElement) {
+                            const text = preElement.textContent || preElement.innerText;
+                            const parsed = JSON.parse(text);
+                            console.log('Read from <pre>:', parsed);
+                            cleanup();
+                            resolve(parsed);
+                            return;
+                        }
+                        
+                        // Try body text
+                        const bodyText = iframeDoc.body.innerText || iframeDoc.body.textContent;
+                        const parsed = JSON.parse(bodyText);
+                        console.log('Read from body:', parsed);
+                        cleanup();
+                        resolve(parsed);
+                    } catch (e) {
+                        console.error('Could not read iframe:', e);
+                        cleanup();
+                        // Return generic success for write operations
+                        resolve({ success: true, data: {} });
+                    }
+                }, 5000);
+
+                iframe.onload = () => {
+                    // Give postMessage time to fire
+                    setTimeout(() => {
+                        if (window.pendingCallback) {
+                            // postMessage didn't work, try direct read
+                            try {
+                                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                                
+                                // Try to find JSON in the page
+                                const preElement = iframeDoc.querySelector('pre');
+                                if (preElement) {
+                                    const text = preElement.textContent || preElement.innerText;
+                                    const parsed = JSON.parse(text);
+                                    console.log('Read from <pre> (onload):', parsed);
+                                    clearTimeout(timeoutId);
+                                    cleanup();
+                                    window.pendingCallback = null;
+                                    resolve(parsed);
+                                    return;
+                                }
+                                
+                                // Try body text
+                                const bodyText = iframeDoc.body.innerText || iframeDoc.body.textContent;
+                                const parsed = JSON.parse(bodyText);
+                                console.log('Read from body (onload):', parsed);
+                                clearTimeout(timeoutId);
+                                cleanup();
+                                window.pendingCallback = null;
+                                resolve(parsed);
+                            } catch (e) {
+                                console.error('Could not read iframe in onload:', e);
+                                // Will timeout and handle above
+                            }
+                        }
+                    }, 1000);
+                };
+
+                iframe.onerror = (error) => {
+                    clearTimeout(timeoutId);
+                    cleanup();
+                    window.pendingCallback = null;
+                    reject(error);
+                };
+
+                form.submit();
+
+                function cleanup() {
+                    setTimeout(() => {
+                        if (form.parentNode) form.parentNode.removeChild(form);
+                        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+                    }, 100);
+                }
+            });
+        }
+
+        // Alternative: Fetch with better error handling
+        async function callBackend(data) {
+            // Always use form submission method to avoid CORS issues
+            return await submitToGoogleScript(data);
+        }
+
+        // Parse response with multiple attempt strategies
+        async function parseResponse(data, timeoutMs = 3000) {
+            return new Promise((resolve) => {
+                // Set a reasonable timeout
+                const timeout = setTimeout(() => {
+                    // If we can't read the response, assume success for write operations
+                    if (data.action === 'submitExam' || data.action === 'startExam') {
+                        resolve({ 
+                            success: true, 
+                            data: data.action === 'startExam' ? { questions: [] } : {}
+                        });
+                    } else {
+                        resolve({ success: false, message: 'Request timeout' });
+                    }
+                }, timeoutMs);
+
+                // Try to get actual response
+                try {
+                    resolve({ success: true, data: {} });
+                } catch (e) {
+                    clearTimeout(timeout);
+                }
+            });
+        }
+
+        // JSONP request (bypasses CORS for GET requests)
+        function jsonpRequest(url, params) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'jsonpCallback_' + Date.now();
+                const script = document.createElement('script');
+                
+                console.log('JSONP request:', url, params);
+                
+                // Create callback function
+                window[callbackName] = function(data) {
+                    console.log('JSONP callback received:', data);
+                    delete window[callbackName];
+                    if (script.parentNode) {
+                        document.body.removeChild(script);
+                    }
+                    clearTimeout(timeoutHandle);
+                    resolve(data);
+                };
+                
+                // Build URL with params
+                const queryParams = new URLSearchParams(params);
+                queryParams.append('callback', callbackName);
+                const fullUrl = url + '?' + queryParams.toString();
+                
+                console.log('Full JSONP URL:', fullUrl);
+                
+                script.src = fullUrl;
+                
+                script.onerror = function(e) {
+                    console.error('Script error:', e);
+                    delete window[callbackName];
+                    if (script.parentNode) {
+                        document.body.removeChild(script);
+                    }
+                    clearTimeout(timeoutHandle);
+                    reject(new Error('JSONP request failed - script could not load'));
+                };
+                
+                // Add timeout
+                const timeoutHandle = setTimeout(() => {
+                    if (window[callbackName]) {
+                        console.error('JSONP timeout');
+                        delete window[callbackName];
+                        if (script.parentNode) {
+                            document.body.removeChild(script);
+                        }
+                        reject(new Error('JSONP request timeout'));
+                    }
+                }, 15000); // Increased to 15 seconds
+                
+                document.body.appendChild(script);
+            });
+        }
+
+        // Handle Login (using JSONP for GET request - no CORS issues)
+        async function handleLogin() {
+            const accessId = document.getElementById('examAccessId').value.trim();
+            
+            if (!accessId) {
+                showMessage('loginMessage', 'Please enter your Exam Access ID', 'error');
+                return;
+            }
+
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Logging in...';
+
+            try {
+                // Use JSONP for login (bypasses CORS)
+                const result = await jsonpRequest(SCRIPT_URL, {
+                    action: 'login',
+                    access_id: accessId
+                });
+
+                console.log('Login result:', result); // Debug
+
+                if (result.success && result.data) {
+                    appState.candidate = result.data;
+                    displayCandidateInfo();
+                    showScreen('instructionsScreen');
+                } else {
+                    showMessage('loginMessage', result.message || 'Invalid Access ID', 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('loginMessage', 'Connection error. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Login';
+            }
+        }
+
+        // Display candidate information
+        function displayCandidateInfo() {
+            const c = appState.candidate;
+            console.log('Candidate data:', c); // Debug
+            
+            document.getElementById('candName').textContent = c.name || 'N/A';
+            document.getElementById('candPsn').textContent = c.psn || 'N/A';
+            document.getElementById('candDept').textContent = c.department || 'N/A';
+            document.getElementById('candExam').textContent = c.exam_name || 'N/A';
+            document.getElementById('candDuration').textContent = (c.timer_minutes || 60) + ' minutes';
+            appState.timerSeconds = (c.timer_minutes || 60) * 60;
+        }
+
+        // Start Exam (using JSONP for GET request - no CORS issues)
+        async function startExam() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Starting...';
+
+            try {
+                console.log('Starting exam for:', appState.candidate.exam_access_id);
+                
+                // Use JSONP for startExam (bypasses CORS)
+                const result = await jsonpRequest(SCRIPT_URL, {
+                    action: 'startExam',
+                    access_id: appState.candidate.exam_access_id
+                });
+
+                console.log('Start exam result:', result); // Debug
+                console.log('Questions received:', result.data ? result.data.questions : 'none');
+
+                if (result.success && result.data && result.data.questions && result.data.questions.length > 0) {
+                    appState.questions = result.data.questions;
+                    appState.examStartTime = new Date();
+                    
+                    console.log('Loaded ' + appState.questions.length + ' questions');
+                    
+                    // Enter fullscreen
+                    enterFullscreen();
+                    
+                    // Disable right-click
+                    document.addEventListener('contextmenu', preventRightClick);
+                    
+                    // Prevent back button
+                    history.pushState(null, null, location.href);
+                    window.onpopstate = function () {
+                        history.go(1);
+                    };
+
+                    // Show exam screen
+                    showScreen('examScreen');
+                    
+                    // Start timer
+                    startTimer();
+                    
+                    // Render first question
+                    renderQuestion();
+                } else {
+                    const msg = result.data && result.data.questions 
+                        ? 'No questions available for your profile (Department: ' + appState.candidate.department + ', Class: ' + appState.candidate.class + '). Please contact administrator.'
+                        : 'Failed to load questions. ' + (result.message || 'Unknown error');
+                    alert(msg);
+                    btn.disabled = false;
+                    btn.textContent = 'Start Exam';
+                }
+            } catch (error) {
+                console.error('Start exam error:', error);
+                alert('Failed to start exam. Error: ' + error.message);
+                btn.disabled = false;
+                btn.textContent = 'Start Exam';
+            }
+        }
+
+        // Enter fullscreen
+        function enterFullscreen() {
+            const elem = document.documentElement;
+            
+            const requestFullscreen = elem.requestFullscreen || 
+                                     elem.webkitRequestFullscreen || 
+                                     elem.msRequestFullscreen || 
+                                     elem.mozRequestFullScreen;
+            
+            if (requestFullscreen) {
+                requestFullscreen.call(elem).catch(err => {
+                    console.log('Fullscreen not available:', err);
+                    // Continue without fullscreen
+                });
+            }
+
+            // Monitor fullscreen changes
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        }
+
+        // Handle fullscreen exit
+        function handleFullscreenChange() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                // User exited fullscreen
+                if (appState.timerInterval && !appState.fullscreenSkipped) {
+                    appState.fullscreenExitCount++;
+                    
+                    if (appState.fullscreenExitCount === 1) {
+                        // First warning
+                        document.getElementById('warningCount').textContent = 'first';
+                        showModal('warningModal');
+                    } else if (appState.fullscreenExitCount >= 2) {
+                        // Auto-submit (but don't try to exit fullscreen again)
+                        clearInterval(appState.timerInterval);
+                        appState.timerInterval = null;
+                        submitExam('fullscreen_exit');
+                    }
+                }
+            }
+        }
+
+        // Return to fullscreen from warning
+        function returnToFullscreen() {
+            hideModal('warningModal');
+            enterFullscreen();
+        }
+
+        // End exam early from warning
+        function endExamEarly() {
+            hideModal('warningModal');
+            submitExam('manual');
+        }
+
+        // Prevent right-click
+        function preventRightClick(e) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Start timer
+        function startTimer() {
+            document.getElementById('timerContainer').style.display = 'block';
+            updateTimerDisplay();
+            
+            appState.timerInterval = setInterval(() => {
+                appState.timerSeconds--;
+                updateTimerDisplay();
+                
+                if (appState.timerSeconds <= 0) {
+                    autoSubmitExam('timeout');
+                }
+            }, 1000);
+        }
+
+        // Update timer display
+        function updateTimerDisplay() {
+            const hours = Math.floor(appState.timerSeconds / 3600);
+            const minutes = Math.floor((appState.timerSeconds % 3600) / 60);
+            const seconds = appState.timerSeconds % 60;
+            
+            const display = pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
+            const timerEl = document.getElementById('timerDisplay');
+            timerEl.textContent = display;
+            
+            // Change color based on time remaining
+            timerEl.classList.remove('warning', 'critical');
+            if (appState.timerSeconds <= 60) {
+                timerEl.classList.add('critical');
+            } else if (appState.timerSeconds <= 300) {
+                timerEl.classList.add('warning');
+            }
+        }
+
+        function pad(num) {
+            return num < 10 ? '0' + num : num;
+        }
+
+        // Render question
+        function renderQuestion() {
+            const q = appState.questions[appState.currentQuestion];
+            const totalQuestions = appState.questions.length;
+            
+            const html = `
+                <div class="question-container">
+                    <div class="question-header">
+                        <span class="question-number">Question ${appState.currentQuestion + 1}</span>
+                        <span class="question-progress">${appState.currentQuestion + 1} of ${totalQuestions}</span>
+                    </div>
+                    
+                    <div class="question-text">${q.question}</div>
+                    
+                    <div class="options">
+                        <div class="option ${appState.answers[q.qid] === 'A' ? 'selected' : ''}" onclick="selectOption('${q.qid}', 'A')">
+                            <span class="option-label">A</span>
+                            <span>${q.optionA}</span>
+                        </div>
+                        <div class="option ${appState.answers[q.qid] === 'B' ? 'selected' : ''}" onclick="selectOption('${q.qid}', 'B')">
+                            <span class="option-label">B</span>
+                            <span>${q.optionB}</span>
+                        </div>
+                        <div class="option ${appState.answers[q.qid] === 'C' ? 'selected' : ''}" onclick="selectOption('${q.qid}', 'C')">
+                            <span class="option-label">C</span>
+                            <span>${q.optionC}</span>
+                        </div>
+                        <div class="option ${appState.answers[q.qid] === 'D' ? 'selected' : ''}" onclick="selectOption('${q.qid}', 'D')">
+                            <span class="option-label">D</span>
+                            <span>${q.optionD}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="navigation">
+                        <button class="btn btn-primary btn-nav" onclick="previousQuestion()" ${appState.currentQuestion === 0 ? 'disabled' : ''}>
+                            ← Previous
+                        </button>
+                        ${appState.currentQuestion === totalQuestions - 1 ? 
+                            '<button class="btn btn-accent btn-nav" onclick="reviewAnswers()">📋 Review Answers</button>' :
+                            '<button class="btn btn-accent btn-nav" onclick="nextQuestion()">Next →</button>'
+                        }
+                        <button class="btn btn-danger btn-nav" onclick="confirmSubmit()">
+                            Submit Exam
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('examContent').innerHTML = html;
+        }
+
+        // Select option
+        function selectOption(qid, option) {
+            appState.answers[qid] = option;
+            renderQuestion();
+        }
+
+        // Previous question
+        function previousQuestion() {
+            if (appState.currentQuestion > 0) {
+                appState.currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        // Next question
+        function nextQuestion() {
+            if (appState.currentQuestion < appState.questions.length - 1) {
+                appState.currentQuestion++;
+                renderQuestion();
+            }
+        }
+        
+        // Make reviewAnswers available globally
+        window.reviewAnswers = function() {
+            const answered = Object.keys(appState.answers).length;
+            const total = appState.questions.length;
+            const unanswered = total - answered;
+            
+            let message = `<div style="text-align: left;">`;
+            message += `<p><strong>Total Questions:</strong> ${total}</p>`;
+            message += `<p><strong>Answered:</strong> ${answered}</p>`;
+            message += `<p><strong>Unanswered:</strong> ${unanswered}</p>`;
+            
+            if (unanswered > 0) {
+                message += `<p style="color: #f2a843;"><strong>⚠️ You have ${unanswered} unanswered question(s).</strong></p>`;
+            }
+            
+            message += `<p style="margin-top: 20px;">Would you like to submit your exam or continue reviewing?</p>`;
+            message += `</div>`;
+            
+            document.getElementById('reviewModalBody').innerHTML = message;
+            showModal('reviewModal');
+        };
+
+        // Close review modal
+        function closeReviewModal() {
+            hideModal('reviewModal');
+            // Go back to first question for review
+            appState.currentQuestion = 0;
+            renderQuestion();
+        }
+
+        // Submit from review modal
+        function submitFromReview() {
+            hideModal('reviewModal');
+            confirmSubmit();
+        }
+
+        // Confirm submit
+        function confirmSubmit() {
+            const answered = Object.keys(appState.answers).length;
+            const total = appState.questions.length;
+            
+            let message = `<div style="text-align: left;">`;
+            message += `<p><strong>Are you ready to submit your exam?</strong></p>`;
+            message += `<p><strong>Answered:</strong> ${answered} of ${total} questions</p>`;
+            
+            if (answered < total) {
+                const unanswered = total - answered;
+                message += `<p style="color: #d32f2f;"><strong>⚠️ Warning:</strong> You have ${unanswered} unanswered question(s).</p>`;
+            }
+            
+            message += `<p style="margin-top: 20px;"><strong>This action cannot be undone.</strong></p>`;
+            message += `</div>`;
+            
+            document.getElementById('confirmModalBody').innerHTML = message;
+            showModal('confirmModal');
+        }
+
+        // Close confirm modal
+        function closeConfirmModal() {
+            hideModal('confirmModal');
+        }
+
+        // Final submit
+        function finalSubmit() {
+            hideModal('confirmModal');
+            submitExam('manual');
+        }
+
+        // Auto-submit exam
+        function autoSubmitExam(reason) {
+            if (appState.timerInterval) {
+                clearInterval(appState.timerInterval);
+                appState.timerInterval = null;
+            }
+            
+            // Close any open modals
+            hideModal('reviewModal');
+            hideModal('confirmModal');
+            hideModal('warningModal');
+            
+            submitExam(reason);
+        }
+
+        // Submit exam
+        async function submitExam(submitType) {
+            // Prevent multiple submissions
+            if (appState.submitting) {
+                console.log('Already submitting, ignoring duplicate call');
+                return;
+            }
+            appState.submitting = true;
+            
+            if (appState.timerInterval) {
+                clearInterval(appState.timerInterval);
+                appState.timerInterval = null;
+            }
+            
+            // Exit fullscreen safely - only if currently in fullscreen
+            try {
+                const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+                if (isFullscreen) {
+                    if (document.exitFullscreen) {
+                        await document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
+                }
+            } catch (e) {
+                console.log('Could not exit fullscreen:', e);
+            }
+
+            // Re-enable right-click
+            document.removeEventListener('contextmenu', preventRightClick);
+
+            // Show loading
+            document.getElementById('examContent').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Submitting your exam...</p>
+                </div>
+            `;
+
+            // Prepare answers array
+            const answersArray = appState.questions.map(q => ({
+                qid: q.qid,
+                answer: appState.answers[q.qid] || ''
+            }));
+
+            try {
+                console.log('Submitting answers:', answersArray.length);
+                
+                const result = await submitToGoogleScript({
+                    action: 'submitExam',
+                    exam_access_id: appState.candidate.exam_access_id,
+                    answers: answersArray,
+                    submit_type: submitType
+                });
+
+                console.log('Submit result:', result);
+
+                // Wait longer for backend to finish writing to sheets
+                // SPT has 5 questions, others have 50, so wait proportionally
+                const waitTime = appState.questions.length > 10 ? 6000 : 3000;
+                console.log('Waiting ' + waitTime + 'ms for backend to complete...');
+                await new Promise(resolve => setTimeout(resolve, waitTime));
+                
+                // Fetch actual results using JSONP
+                try {
+                    console.log('Fetching results...');
+                    const resultsData = await jsonpRequest(SCRIPT_URL, {
+                        action: 'getResults',
+                        access_id: appState.candidate.exam_access_id
+                    });
+                    
+                    console.log('Results fetched:', resultsData);
+                    
+                    if (resultsData.success && resultsData.data) {
+                        displayResults(resultsData.data);
+                    } else {
+                        console.error('Results fetch returned error:', resultsData.message);
+                        // Retry once after another 3 seconds
+                        console.log('Retrying result fetch...');
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        
+                        const retryResults = await jsonpRequest(SCRIPT_URL, {
+                            action: 'getResults',
+                            access_id: appState.candidate.exam_access_id
+                        });
+                        
+                        if (retryResults.success && retryResults.data) {
+                            displayResults(retryResults.data);
+                        } else {
+                            // Final fallback
+                            displayResults({
+                                score: '---',
+                                correct: '---',
+                                total: answersArray.length,
+                                remarks: 'Submitted - Check Results Sheet',
+                                duration: calculateDuration()
+                            });
+                        }
+                    }
+                } catch (fetchError) {
+                    console.error('Failed to fetch results:', fetchError);
+                    // Fallback display
+                    displayResults({
+                        score: '---',
+                        correct: '---',
+                        total: answersArray.length,
+                        remarks: 'Submitted - Check Results Sheet',
+                        duration: calculateDuration()
+                    });
+                }
+            } catch (error) {
+                console.error('Submit error:', error);
+                // Still show results screen
+                displayResults({
+                    score: '---',
+                    correct: '---',
+                    total: answersArray.length,
+                    remarks: 'Submitted - Check Results Sheet',
+                    duration: calculateDuration()
+                });
+            }
+        }
+
+        // Calculate duration
+        function calculateDuration() {
+            if (!appState.examStartTime) return '00:00:00';
+            const now = new Date();
+            const diff = now - appState.examStartTime;
+            const seconds = Math.floor(diff / 1000);
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return pad(hours) + ':' + pad(minutes) + ':' + pad(secs);
+        }
+
+        // Display results
+        function displayResults(data) {
+            console.log('Displaying results:', data);
+            
+            const score = data.score !== undefined ? data.score : '---';
+            const correct = data.correct !== undefined ? data.correct : '---';
+            const total = data.total !== undefined ? data.total : 0;
+            const remarks = data.remarks || 'Submitted';
+            
+            // Handle duration - might be a date string from sheets
+            let duration = data.duration || calculateDuration();
+            if (typeof duration === 'string' && duration.includes('T')) {
+                // It's a date string, extract time portion
+                try {
+                    const date = new Date(duration);
+                    duration = pad(date.getUTCHours()) + ':' + pad(date.getUTCMinutes()) + ':' + pad(date.getUTCSeconds());
+                } catch (e) {
+                    duration = calculateDuration();
+                }
+            }
+            
+            // Format score display
+            const scoreDisplay = (typeof score === 'number') ? score + '%' : score;
+            
+            document.getElementById('resultScore').textContent = scoreDisplay;
+            document.getElementById('resultRemark').textContent = remarks;
+            document.getElementById('resultTotal').textContent = total;
+            document.getElementById('resultCorrect').textContent = correct;
+            document.getElementById('resultDuration').textContent = duration;
+            
+            const scoreEl = document.getElementById('resultScore');
+            scoreEl.classList.remove('fail'); // Reset
+            if (remarks === 'Fail' || (typeof score === 'number' && score < 50)) {
+                scoreEl.classList.add('fail');
+            } else if (typeof score === 'number' && score >= 50) {
+                scoreEl.style.color = '#17956a'; // Success green
+            }
+            
+            document.getElementById('timerContainer').style.display = 'none';
+            showScreen('resultsScreen');
+        }
+
+        // Handle Enter key on login
+        document.getElementById('examAccessId').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+
+        // Prevent exam page refresh
+        window.addEventListener('beforeunload', function (e) {
+            if (appState.timerInterval) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>
